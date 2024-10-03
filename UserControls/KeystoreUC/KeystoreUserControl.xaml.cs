@@ -17,6 +17,7 @@ using System.ComponentModel;
 using System.Collections.ObjectModel;
 using Keystore_Extractor.UserControls.KeystoreUC;
 using Microsoft.Win32;
+using Keystore_Extractor.Helper;
 
 namespace Keystore_Extractor.UserControls
 {
@@ -25,18 +26,21 @@ namespace Keystore_Extractor.UserControls
     /// </summary>
     public partial class KeystoreUserControl : UserControl
     {
-        public KeystoreModel Keystore { get; set; } = new KeystoreModel();
+        public KeystoreModel Keystore { get; private set; } = new KeystoreModel();
 
         public KeystoreUserControl()
         {
             InitializeComponent();
-            DataContext=Keystore;
+            Keystore=new KeystoreModel(); // Initialize with a new KeystoreModel
+            DataContext=Keystore; // Set DataContext to the new model
         }
 
         public KeystoreUserControl(KeystoreModel model)
         {
             InitializeComponent();
-            DataContext=model; // Set DataContext to the model passed in
+            Keystore=model;
+            DataContext=Keystore;
+
         }
 
         private void BrowseFile_Click(object sender, RoutedEventArgs e)
@@ -60,13 +64,7 @@ namespace Keystore_Extractor.UserControls
 
         private void Remove_Click(object sender, RoutedEventArgs e)
         {
-            // Find the parent ItemsControl
-            ItemsControl itemsControl = FindAncestor<ItemsControl>(this);
-            if (itemsControl!=null&&itemsControl.ItemsSource is ObservableCollection<KeystoreModel> items)
-            {
-                // Remove the current instance from the ItemsSource
-                items.Remove((KeystoreModel)this.DataContext);
-            }
+            EventsAndActions.OnRemove?.Invoke(((KeystoreModel)DataContext).Id);
         }
 
         // Helper method to find the ancestor of a specific type

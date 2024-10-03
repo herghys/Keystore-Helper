@@ -9,6 +9,7 @@ namespace Keystore_Extractor.UserControls.KeystoreUC
 {
     public class KeystoreModel : INotifyPropertyChanged
     {
+        public Guid Id { get; private set; }
         private string _filePath;
         private string _alias;
         private string _storePass;
@@ -49,9 +50,11 @@ namespace Keystore_Extractor.UserControls.KeystoreUC
             set { _sha256=value; OnPropertyChanged(nameof(SHA256)); }
         }
 
-        public KeystoreModel()
+        public KeystoreModel SetNew()
         {
             FilePath=string.Empty; // Initialize it
+            Id=Guid.NewGuid();
+            return this;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

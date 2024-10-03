@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
 using System.Windows.Data;
 
 namespace Keystore_Extractor.Helper
@@ -8,8 +9,8 @@ namespace Keystore_Extractor.Helper
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string filename = value as string;
-            return string.IsNullOrEmpty(filename) ? "Keystore" : $"Keystore {filename}";
+            string filepath = value as string;
+            return string.IsNullOrEmpty(filepath) ? "Keystore:" : $"Keystore: {Path.GetFileNameWithoutExtension(filepath)}";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

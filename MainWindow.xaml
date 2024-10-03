@@ -39,8 +39,8 @@
                         <DataTemplate>
                             <StackPanel>
                                 <!-- Content of KeystoreUserControl -->
-                                <local:KeystoreUserControl />
-                                <Separator Margin="0,5" Height="1" Background="Gray" />
+                                <local:KeystoreUserControl DataContext="{Binding}" />
+                                <Separator Margin="0,5"  />
                             </StackPanel>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

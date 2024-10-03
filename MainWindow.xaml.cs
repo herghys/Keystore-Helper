@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using Keystore_Extractor.Helper;
 using Keystore_Extractor.UserControls;
 using Keystore_Extractor.UserControls.KeystoreUC;
 
@@ -25,18 +26,33 @@ namespace Keystore_Extractor
     /// </summary>
     public partial class MainWindow : Window
     {
-        public ObservableCollection<KeystoreModel> Keystores { get; set; }
+        public ObservableCollection<KeystoreUserControl> Keystores { get; set; }
         public MainWindow()
         {
             InitializeComponent();
-            Keystores=new ObservableCollection<KeystoreModel>();
+            EventsAndActions.OnRemove+=OnKeystoreRemoved;
+            Keystores=new ObservableCollection<KeystoreUserControl>();
             ItemsContainer.ItemsSource=Keystores;
+        }
+
+        private void OnKeystoreRemoved(Guid guid)
+        {
+            var data = Keystores.Where(x => x.Keystore.Id==guid).Single();
+            try
+            {
+                Keystores.Remove(data);
+            }
+            catch (Exception e)
+            {
+                throw e; 
+            }
         }
 
         private void AddPrefab_Click(object sender, RoutedEventArgs e)
         {
-            //KeystoreUserControl newPrefab = new KeystoreUserControl ();
-            Keystores.Add(new KeystoreModel() { FilePath = string.Empty});
+            var newKeystoreModel = new KeystoreModel().SetNew(); // Create a new instance of KeystoreModel
+            var newKeystoreControl = new KeystoreUserControl(newKeystoreModel); // Create a new KeystoreUserControl instance
+            Keystores.Add(newKeystoreControl); // Add the control 
         }
 
         // Event handler to extract SHA1 and SHA256 for each prefab
@@ -51,7 +67,7 @@ namespace Keystore_Extractor
                     string storepass = prefab.Keystore.StorePass;
 
                     // Build the command to run keytool
-                    string keytoolCmd = $"-alias {alias} -keystore \"{keystore}\" -storepass {storepass}";
+                    string keytoolCmd = $"-list -v -alias {alias} -keystore \"{keystore}\" -storepass {storepass}";
 
                     // Execute the command and extract SHA1 and SHA256
                     Process process = new Process();
