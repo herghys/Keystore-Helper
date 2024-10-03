@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using Keystore_Extractor.UserControls;
+using Keystore_Extractor.UserControls.KeystoreUC;
 
 namespace Keystore_Extractor
 {
@@ -23,15 +25,18 @@ namespace Keystore_Extractor
     /// </summary>
     public partial class MainWindow : Window
     {
+        public ObservableCollection<KeystoreModel> Keystores { get; set; }
         public MainWindow()
         {
             InitializeComponent();
+            Keystores=new ObservableCollection<KeystoreModel>();
+            ItemsContainer.ItemsSource=Keystores;
         }
 
         private void AddPrefab_Click(object sender, RoutedEventArgs e)
         {
-            KeystoreUserControl newPrefab = new KeystoreUserControl ();
-            ItemsContainer.Items.Add(newPrefab);
+            //KeystoreUserControl newPrefab = new KeystoreUserControl ();
+            Keystores.Add(new KeystoreModel() { FilePath = string.Empty});
         }
 
         // Event handler to extract SHA1 and SHA256 for each prefab
@@ -41,9 +46,9 @@ namespace Keystore_Extractor
             {
                 if (item is KeystoreUserControl prefab)
                 {
-                    string alias = prefab.Alias;
-                    string keystore = prefab.FilePath;
-                    string storepass = prefab.StorePass;
+                    string alias = prefab.Keystore.Alias;
+                    string keystore = prefab.Keystore.FilePath;
+                    string storepass = prefab.Keystore.StorePass;
 
                     // Build the command to run keytool
                     string keytoolCmd = $"-alias {alias} -keystore \"{keystore}\" -storepass {storepass}";
@@ -65,8 +70,8 @@ namespace Keystore_Extractor
                     string sha256 = ExtractSHAValue(output, "SHA256");
 
                     // Bind the extracted values back to the prefab
-                    prefab.SHA1=sha1;
-                    prefab.SHA256=sha256;
+                    prefab.Keystore.SHA1=sha1;
+                    prefab.Keystore.SHA256=sha256;
                 }
             }
         }

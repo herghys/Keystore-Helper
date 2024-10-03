@@ -14,70 +14,73 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using System.ComponentModel;
+using System.Collections.ObjectModel;
+using Keystore_Extractor.UserControls.KeystoreUC;
+using Microsoft.Win32;
 
 namespace Keystore_Extractor.UserControls
 {
     /// <summary>
     /// Interaction logic for KeystoreUserControl.xaml
     /// </summary>
-    public partial class KeystoreUserControl : UserControl, INotifyPropertyChanged
+    public partial class KeystoreUserControl : UserControl
     {
-        private string _filePath;
-        private string _alias;
-        private string _storePass;
-        private string _sha1;
-        private string _sha256;
-
-        public string FilePath
-        {
-            get => _filePath;
-            set { _filePath=value; OnPropertyChanged(nameof(FilePath)); }
-        }
-
-        public string Alias
-        {
-            get => _alias;
-            set { _alias=value; OnPropertyChanged(nameof(Alias)); }
-        }
-
-        public string StorePass
-        {
-            get => _storePass;
-            set { _storePass=value; OnPropertyChanged(nameof(StorePass)); }
-        }
-
-        public string SHA1
-        {
-            get => _sha1;
-            set { _sha1=value; OnPropertyChanged(nameof(SHA1)); }
-        }
-
-        public string SHA256
-        {
-            get => _sha256;
-            set { _sha256=value; OnPropertyChanged(nameof(SHA256)); }
-        }
-
+        public KeystoreModel Keystore { get; set; } = new KeystoreModel();
 
         public KeystoreUserControl()
         {
             InitializeComponent();
-            DataContext=this;
+            DataContext=Keystore;
+        }
+
+        public KeystoreUserControl(KeystoreModel model)
+        {
+            InitializeComponent();
+            DataContext=model; // Set DataContext to the model passed in
         }
 
         private void BrowseFile_Click(object sender, RoutedEventArgs e)
         {
-            Microsoft.Win32.OpenFileDialog openFileDialog = new Microsoft.Win32.OpenFileDialog();
+            var openFileDialog = new OpenFileDialog
+            {
+                Title="Select a Keystore File",
+                Filter="Keystore Files (*.keystore)|*.keystore|All Files (*.*)|*.*",
+                Multiselect=false // Only allow single file selection
+            };
+
             if (openFileDialog.ShowDialog()==true)
             {
-                FilePath=openFileDialog.FileName;
+                // Set the FilePath property of the bound model
+                if (DataContext is KeystoreModel model)
+                {
+                    model.FilePath=openFileDialog.FileName;
+                }
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName)
+        private void Remove_Click(object sender, RoutedEventArgs e)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            // Find the parent ItemsControl
+            ItemsControl itemsControl = FindAncestor<ItemsControl>(this);
+            if (itemsControl!=null&&itemsControl.ItemsSource is ObservableCollection<KeystoreModel> items)
+            {
+                // Remove the current instance from the ItemsSource
+                items.Remove((KeystoreModel)this.DataContext);
+            }
+        }
+
+        // Helper method to find the ancestor of a specific type
+        private T FindAncestor<T>(DependencyObject current) where T : DependencyObject
+        {
+            while (current!=null)
+            {
+                if (current is T ancestor)
+                {
+                    return ancestor;
+                }
+                current=VisualTreeHelper.GetParent(current);
+            }
+            return null;
         }
     }
 }
