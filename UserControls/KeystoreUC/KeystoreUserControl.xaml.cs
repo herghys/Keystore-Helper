@@ -26,7 +26,7 @@ namespace Keystore_Extractor.UserControls
     /// </summary>
     public partial class KeystoreUserControl : UserControl
     {
-        public KeystoreModel Keystore { get; private set; } = new KeystoreModel();
+        public KeystoreModel Keystore { get; set; } = new KeystoreModel();
 
         public KeystoreUserControl()
         {
@@ -40,7 +40,6 @@ namespace Keystore_Extractor.UserControls
             InitializeComponent();
             Keystore=model;
             DataContext=Keystore;
-
         }
 
         private void BrowseFile_Click(object sender, RoutedEventArgs e)
@@ -67,18 +66,27 @@ namespace Keystore_Extractor.UserControls
             EventsAndActions.OnRemove?.Invoke(((KeystoreModel)DataContext).Id);
         }
 
-        // Helper method to find the ancestor of a specific type
-        private T FindAncestor<T>(DependencyObject current) where T : DependencyObject
+
+        private void Header_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            while (current!=null)
+            // Toggle the visibility of the details section
+            if (Collapsible_Detail.Visibility==Visibility.Visible)
             {
-                if (current is T ancestor)
-                {
-                    return ancestor;
-                }
-                current=VisualTreeHelper.GetParent(current);
+                Collapsible_Detail.Visibility=Visibility.Collapsed;
+                RotateArrow(0); // Reset arrow rotation
             }
-            return null;
+            else
+            {
+                Collapsible_Detail.Visibility=Visibility.Visible;
+                RotateArrow(90); // Rotate arrow to indicate open state
+            }
+        }
+
+        private void RotateArrow(double angle)
+        {
+            // Rotate the arrow based on the toggle state
+            var rotateTransform = (RotateTransform)Arrow.RenderTransform;
+            rotateTransform.Angle=angle;
         }
     }
 }

@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using Keystore_Extractor.Commands;
 using Keystore_Extractor.Helper;
 using Keystore_Extractor.UserControls;
 using Keystore_Extractor.UserControls.KeystoreUC;
@@ -42,13 +43,15 @@ namespace Keystore_Extractor
             {
                 Keystores.Remove(data);
             }
-            catch (Exception e)
+            catch { }
+            finally
             {
-                throw e; 
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
         }
 
-        private void AddPrefab_Click(object sender, RoutedEventArgs e)
+        private void AddKeystore_Click(object sender, RoutedEventArgs e)
         {
             var newKeystoreModel = new KeystoreModel().SetNew(); // Create a new instance of KeystoreModel
             var newKeystoreControl = new KeystoreUserControl(newKeystoreModel); // Create a new KeystoreUserControl instance
@@ -58,52 +61,23 @@ namespace Keystore_Extractor
         // Event handler to extract SHA1 and SHA256 for each prefab
         private void ExtractAll_Click(object sender, RoutedEventArgs e)
         {
+            ExtractFromItemContainer();
+        }
+
+        async void ExtractFromItemContainer()
+        {
+            var commandProcess = KeytoolCommandRunner.CreateKeytoolProcess();
             foreach (var item in ItemsContainer.Items)
             {
                 if (item is KeystoreUserControl prefab)
                 {
-                    string alias = prefab.Keystore.Alias;
-                    string keystore = prefab.Keystore.FilePath;
-                    string storepass = prefab.Keystore.StorePass;
-
-                    // Build the command to run keytool
-                    string keytoolCmd = $"-list -v -alias {alias} -keystore \"{keystore}\" -storepass {storepass}";
-
-                    // Execute the command and extract SHA1 and SHA256
-                    Process process = new Process();
-                    process.StartInfo.FileName="keytool";
-                    process.StartInfo.Arguments=keytoolCmd;
-                    process.StartInfo.RedirectStandardOutput=true;
-                    process.StartInfo.UseShellExecute=false;
-                    process.StartInfo.CreateNoWindow=true;
-                    process.Start();
-
-                    string output = process.StandardOutput.ReadToEnd();
-                    process.WaitForExit();
-
-                    // Extract SHA1 and SHA256 from the output
-                    string sha1 = ExtractSHAValue(output, "SHA1");
-                    string sha256 = ExtractSHAValue(output, "SHA256");
-
-                    // Bind the extracted values back to the prefab
-                    prefab.Keystore.SHA1=sha1;
-                    prefab.Keystore.SHA256=sha256;
+                    var keystoreData = prefab.Keystore;
+                    KeytoolCommandRunner.RunCommandAsynchronous(keystoreData, commandProcess);
+                    prefab.Keystore.SHA1=keystoreData.SHA1;
+                    prefab.Keystore.SHA256 = keystoreData.SHA256;
+                    await Task.CompletedTask;
                 }
             }
-        }
-
-        // Function to extract SHA1 or SHA256 from keytool output
-        private string ExtractSHAValue(string output, string shaType)
-        {
-            string shaPattern = $"{shaType}:";
-            int shaIndex = output.IndexOf(shaPattern);
-            if (shaIndex!=-1)
-            {
-                int startIndex = shaIndex+shaPattern.Length;
-                string shaValue = output.Substring(startIndex).Trim();
-                return shaValue.Split(new[] { ' ', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)[0];
-            }
-            return string.Empty;
         }
 
         // Event handler for Export button (implement export logic here)
