@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Keystore_Extractor.UserControls.KeystoreUC
+namespace Keystore_Extractor.UserControls.KeystoreDetailUC
 {
     /// <summary>
     /// Interaction logic for KeystoreDetailUserControl.xaml

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Keystore_Extractor.UserControls.KeystoreUC
+namespace Keystore_Extractor.Models
 {
     public class KeystoreModel : INotifyPropertyChanged
     {

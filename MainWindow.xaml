@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Keystore_Extractor.UserControls"
+        xmlns:local="clr-namespace:Keystore_Extractor.UserControls.KeystoreUC"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid Background="AliceBlue">
@@ -57,15 +57,13 @@
             <DockPanel Grid.Row="2" Background="GhostWhite">
                 <StatusBar DockPanel.Dock="Bottom">
                     <StatusBarItem>
-                        <ProgressBar Name="Status_ProgressBar" Width="150" Height="20"/>
+                        <ProgressBar Name="Status_ProgressBar" Width="200" Height="20"/>
                     </StatusBarItem>
                     <Separator/>
                     <StatusBarItem>
-                        <TextBlock Name="Status_Text" Width="200" Text="Waiting" FontSize="14"></TextBlock>
+                        <TextBlock Name="Status_Text" Width="200" Text="Idle" FontSize="14"></TextBlock>
                     </StatusBarItem>
-                    <Separator/>
-                    <TextBlock TextWrapping="Wrap" Text="TextBlock" FontSize="14"/>
-                       
+
                 </StatusBar>
             </DockPanel>
 
@@ -73,6 +71,7 @@
 
         <!-- Right Column (Buttons) -->
         <StackPanel Margin="10,0,10,10" Grid.Column="1">
+            <Button Content="Create Keystore"  Click="CreateKeystore_Click" Margin="5,5,5,2" Height="36"/>
             <Button Content="Add Keystore"  Click="AddKeystore_Click" Margin="5,5,5,2" Height="36"/>
             <Button Content="Extract All"  Click="ExtractAll_Click" Margin="5,5,5,2" Height="36"/>
             <Button Content="Export"  Click="Export_Click" Margin="5,5,5,2" Height="36"/>

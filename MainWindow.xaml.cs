@@ -1,23 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 using Keystore_Extractor.Commands;
 using Keystore_Extractor.Helper;
-using Keystore_Extractor.UserControls;
+using Keystore_Extractor.Models;
 using Keystore_Extractor.UserControls.KeystoreUC;
 
 namespace Keystore_Extractor
@@ -66,13 +55,12 @@ namespace Keystore_Extractor
 
         async void ExtractFromItemContainer()
         {
-            var commandProcess = KeytoolCommandRunner.CreateKeytoolProcess();
             foreach (var item in ItemsContainer.Items)
             {
                 if (item is KeystoreUserControl prefab)
                 {
                     var keystoreData = prefab.Keystore;
-                    KeytoolCommandRunner.RunCommandAsynchronous(keystoreData, commandProcess);
+                    KeytoolCommandRunner.ExtractKeystoreCommand(keystoreData);
                     prefab.Keystore.SHA1=keystoreData.SHA1;
                     prefab.Keystore.SHA256 = keystoreData.SHA256;
                     await Task.CompletedTask;
@@ -85,6 +73,11 @@ namespace Keystore_Extractor
         {
             // Export logic for the MyPrefabs
             MessageBox.Show("Export functionality not yet implemented.");
+        }
+
+        private void CreateKeystore_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }
