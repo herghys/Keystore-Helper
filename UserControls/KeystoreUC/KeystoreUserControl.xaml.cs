@@ -50,7 +50,7 @@ namespace Keystore_Extractor.UserControls.KeystoreUC
 
         private void Remove_Click(object sender, RoutedEventArgs e)
         {
-            EventsAndActions.OnRemove?.Invoke(((KeystoreModel)DataContext).Id);
+            EventsAndActions.OnKeystoreRemoved?.Invoke(((KeystoreModel)DataContext).Id);
         }
 
 

@@ -13,9 +13,21 @@ namespace Keystore_Extractor.Commands
     {
         //keytool -genkeypair -alias mykey -keyalg RSA -keysize 2048 -keystore mykeystore.keystore -validity 365 -dname "CN=Your Name, OU=Your Organizational Unit, O=Your Company, L=Your City, ST=Your State, C=Your Country"
 
-        public static void CreateKeystoreCommand(KeystoreModel keystore, DnameModel dname)
+        public static void CreateKeystoreCommand(KeystoreModel keystore, DistinguishedNameModel dname)
         {
+            string keytoolCmd = $"-genkeypair  -keyalg RSA -keysize 2048" +
+                $"-keystore {keystore.FilePath} -storepass {keystore.StorePass} " +
+                $"-alias {keystore.Alias}  -keypass {keystore.AliasPass} " +
+                $"-validity {keystore.Validity} -storetype JKS" +
+                $"-dname \"CN={dname.Name}, OU={dname.OrganizationalUnit}. O={dname.Organization}, L={dname.City}, ST={dname.City}, C={dname.Country}\"";
 
+            using( Process process = CreateKeytoolProcess())
+            {
+                process.StartInfo.Arguments = keytoolCmd;
+
+                process.Start();
+                process.WaitForExit();
+            }
         }
 
 

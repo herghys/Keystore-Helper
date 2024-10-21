@@ -13,16 +13,17 @@ namespace Keystore_Extractor.Models
         private string _filePath;
         private string _alias;
         private string _storePass;
+        private string _aliasPass;
         private string _sha1;
         private string _sha256;
+        private string _validity;
 
         public string FilePath
         {
             get => _filePath;
             set
             {
-                _filePath=value;
-                OnPropertyChanged(nameof(FilePath));
+                _filePath=value; OnPropertyChanged(nameof(FilePath));
             }
         }
 
@@ -36,6 +37,18 @@ namespace Keystore_Extractor.Models
         {
             get => _storePass;
             set { _storePass=value; OnPropertyChanged(nameof(StorePass)); }
+        }
+
+        public string AliasPass
+        {
+            get => _aliasPass;
+            set { _aliasPass = value; OnPropertyChanged(nameof(AliasPass)); }
+        }
+
+        public string Validity
+        {
+            get => _validity;
+            set { _validity = value; OnPropertyChanged(nameof(Validity)); }
         }
 
         public string SHA1

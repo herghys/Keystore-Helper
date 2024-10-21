@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 
 using Keystore_Extractor.Commands;
 using Keystore_Extractor.Helper;
 using Keystore_Extractor.Models;
 using Keystore_Extractor.UserControls.KeystoreUC;
+using Keystore_Extractor.Windows;
 
 namespace Keystore_Extractor
 {
@@ -17,12 +20,21 @@ namespace Keystore_Extractor
     public partial class MainWindow : Window
     {
         public ObservableCollection<KeystoreUserControl> Keystores { get; set; }
+        NewKeystore newKeystoreWindow;
+
         public MainWindow()
         {
             InitializeComponent();
-            EventsAndActions.OnRemove+=OnKeystoreRemoved;
+            InitializeEvents();
             Keystores=new ObservableCollection<KeystoreUserControl>();
             ItemsContainer.ItemsSource=Keystores;
+        }
+
+        public void InitializeEvents()
+        {
+
+            EventsAndActions.OnKeystoreRemoved+=OnKeystoreRemoved;
+            EventsAndActions.OnCreateNewKeystoreSuccess += OnCreateNewKeystoreSuccess;
         }
 
         private void OnKeystoreRemoved(Guid guid)
@@ -77,7 +89,38 @@ namespace Keystore_Extractor
 
         private void CreateKeystore_Click(object sender, RoutedEventArgs e)
         {
+            if (newKeystoreWindow != null)
+                return;
+
+            newKeystoreWindow = new NewKeystore();
+            newKeystoreWindow.Closing += OnNewKeystoreClosing;
+            newKeystoreWindow.Show();
+
+            button_CreateKeystore.IsEnabled = false;
 
         }
+
+        private void OnNewKeystoreClosing(object sender, CancelEventArgs e)
+        {
+            EventsAndActions.OnCreateNewKeystoreSuccess -= OnCreateNewKeystoreSuccess;
+            newKeystoreWindow.Closing -= OnNewKeystoreClosing;
+
+            newKeystoreWindow = null;
+
+            button_CreateKeystore.IsEnabled = true;
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+        }
+
+        #region Actions
+
+        private void OnCreateNewKeystoreSuccess(KeystoreModel model1, DistinguishedNameModel model2)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        #endregion
     }
 }

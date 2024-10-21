@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Keystore_Extractor.Models
+namespace Keystore_Extractor.Enums
 {
-    internal class DnameModel
+    public enum KeystoreType
     {
+        JKS,
+        PKCS12
     }
 }
